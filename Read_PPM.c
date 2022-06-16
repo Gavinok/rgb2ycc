@@ -12,8 +12,8 @@ typedef struct {
      PPMPixel *data;
 } PPMImage;
 
-#define CREATOR "RPFELGUEIRAS"
 #define RGB_COMPONENT_COLOR 255
+#define CREATOR "bmazerolle"
 
 static PPMImage *readPPM(const char *filename)
 {
@@ -134,9 +134,9 @@ void changeColorPPM(PPMImage *img)
 
 int main(){
     PPMImage *image;
-    image = readPPM("can_bottom.ppm");
+    image = readPPM("img_forest.ppm");
     changeColorPPM(image);
-    writePPM("can_bottom2.ppm",image);
+    writePPM("img_forest2.ppm",image);
     printf("Press any key...");
     getchar();
 }
