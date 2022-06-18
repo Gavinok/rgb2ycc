@@ -108,6 +108,10 @@ void writePPM(const char *filename, PPMImage *img)
 
     // pixel data
     fwrite(img->data, 3 * img->x, img->y, fp);
+
+    // Free the image data
+    free(img->data);
+    free(img);
     fclose(fp);
 }
 
