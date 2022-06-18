@@ -25,7 +25,7 @@ tmp.json: rgb2ycc
 
 endif
 
-# Create the libraries
+# Create the object files for our libraries
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
