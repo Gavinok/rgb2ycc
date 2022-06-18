@@ -37,4 +37,4 @@ rgb2ycc: $(OBJ)
 # test: test/test.c $(OBJ)
 
 clean:
-	$(RM) output_sample_640×426.bmp
+	$(RM) img_forest2.ppm $(OBJ) rgb2ycc
