@@ -140,9 +140,9 @@ void applyModifierPPM(RGBPixel modifier(RGBPixel), PPMImage *img)
     if(img){
       for(i=0;i<img->x*img->y;i++){
               RGBPixel rgb = {
-                RGB_COMPONENT_COLOR-img->data[i].red,
-                RGB_COMPONENT_COLOR-img->data[i].green,
-                RGB_COMPONENT_COLOR-img->data[i].blue,
+                img->data[i].red,
+                img->data[i].green,
+                img->data[i].blue,
               };
               RGBPixel result = modifier(rgb);
               img->data[i].red=result.red;
