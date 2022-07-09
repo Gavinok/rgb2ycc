@@ -1,16 +1,8 @@
 #ifndef READ_PPM
 #define READ_PPM
-#include<stdio.h>
-#include<stdlib.h>
-
-typedef struct {
-     unsigned char red,green,blue;
-} PPMPixel;
-
-typedef struct {
-     int x, y;
-     PPMPixel *data;
-} PPMImage;
+#include <stdio.h>
+#include <stdlib.h>
+#include "util.h"
 
 #define RGB_COMPONENT_COLOR 255
 #define CREATOR "bmazerolle"
