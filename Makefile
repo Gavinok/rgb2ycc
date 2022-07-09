@@ -3,7 +3,8 @@ CC=clang
 # These are mostly here to on to cover our buts during the base setup
 DEVFLAGS= -Wall -Wextra -fsanitize=address -fsanitize=undefined
 CFLAGS=$(DEVFLAGS)
-SRC = Read_PPM.c main.c
+LIB = colors.c Read_PPM.c
+SRC = $(LIB) main.c
 OBJ = ${SRC:.c=.o}
 
 all: rgb2ycc

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "Read_PPM.h"
+#include "colors.h"
 
 #define DEBUG
 #ifdef DEBUG
