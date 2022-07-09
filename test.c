@@ -1,22 +1,28 @@
 /* This file will be loaded instead of the main to test our color
    conversion. To try it run `make test` */
 #include "colors.h"
+#include <assert.h>
 
 void color_convert_benchmark(RGBPixel rgb){
   YCCPixel ycc = rgb_to_ycbcr(rgb);
   RGBPixel rgb_final = ycbcr_to_rgb(ycc);
   printf("Initial values \n");
   printf("input red   = %u AND output red  = %u Difference = %d\n", rgb.red, rgb_final.red,
-         rgb.blue - rgb_final.blue);
+         rgb.red - rgb_final.red);
   printf("input green = %u AND ouput green = %u Difference = %d\n", rgb.green, rgb_final.green,
          rgb.green - rgb_final.green);
   printf("input blue  = %u AND ouput blue  = %u Difference = %d\n", rgb.blue, rgb_final.blue,
          rgb.blue - rgb_final.blue);
-
   printf("Transitional values where \n");
   printf("y = %u\n", ycc.y);
   printf("c_b = %u\n", ycc.c_b);
   printf("c_r = %u\n", ycc.c_r);
+
+  // Assert not too much info was lost
+  assert(rgb.red - rgb_final.red < 4);
+  assert(rgb.green - rgb_final.green < 4);
+  assert(rgb.blue - rgb_final.blue < 4);
+
   printf("\n\n");
 }
 
