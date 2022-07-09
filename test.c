@@ -6,9 +6,12 @@ void color_convert_benchmark(RGBPixel rgb){
   YCCPixel ycc = rgb_to_ycbcr(rgb);
   RGBPixel rgb_final = ycbcr_to_rgb(ycc);
   printf("Initial values \n");
-  printf("input red   = %u AND output red  = %u\n", rgb.red, rgb_final.green);
-  printf("input green = %u AND ouput green = %u\n", rgb.green, rgb_final.green);
-  printf("input blue  = %u AND ouput blue  = %u\n", rgb.blue, rgb_final.blue);
+  printf("input red   = %u AND output red  = %u Difference = %d\n", rgb.red, rgb_final.red,
+         rgb.blue - rgb_final.blue);
+  printf("input green = %u AND ouput green = %u Difference = %d\n", rgb.green, rgb_final.green,
+         rgb.green - rgb_final.green);
+  printf("input blue  = %u AND ouput blue  = %u Difference = %d\n", rgb.blue, rgb_final.blue,
+         rgb.blue - rgb_final.blue);
 
   printf("Transitional values where \n");
   printf("y = %u\n", ycc.y);

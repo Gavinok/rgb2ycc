@@ -6,6 +6,8 @@ CFLAGS=$(DEVFLAGS)
 LIB = colors.c Read_PPM.c
 SRC = $(LIB) main.c
 OBJ = ${SRC:.c=.o}
+TEST_SRC = $(LIB) test.c
+TEST_OBJ = ${TEST_SRC:.c=.o}
 
 all: rgb2ycc
 
@@ -33,6 +35,10 @@ endif
 # Generate the final executable
 rgb2ycc: $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $@
+
+test: $(TEST_OBJ)
+	$(CC) $(CFLAGS) $(TEST_OBJ) -o $@
+	./test
 
 # TODO Implement testcases
 # test: test/test.c $(OBJ)
