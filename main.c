@@ -12,10 +12,15 @@
 #endif
 
 #define dbp()
-int main(int argc, char* argv[]) {
+
+RGBPixel quality_check(RGBPixel p){
+  return ycbcr_to_rgb(rgb_to_ycbcr(p));
+}
+
+int main() {
   PPMImage *image;
   image = readPPM("img_forest.ppm");
-  changeColorPPM(image);
+  applyModifierPPM(&quality_check, image);
   writePPM("img_forest2.ppm", image);
   printf("Press any key...");
   getchar();
