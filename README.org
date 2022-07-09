@@ -1,0 +1,28 @@
+* Building the project
+
+#+begin_src bash
+  make
+#+end_src
+
+* Building ~compile_commands.json~ (useful for VSCode users)
+
+#+begin_src bash
+  make compile_commands.json
+#+end_src
+
+* Usage
+
+To convert the included image run
+
+#+begin_src bash
+  make
+  ./rgb2ycc
+ #+end_src
+
+* Testing
+
+To check how accurate the color conversion is simply run
+
+#+begin_src bash
+   make test
+ #+end_src
