@@ -127,3 +127,27 @@ void changeColorPPM(PPMImage *img)
          }
     }
 }
+
+/*
+ Apply different modifications to the given image modifier is given as
+ a function pointer so new filtering approaches can be applied easily.
+ This may not be the best way to apply the final version since I am
+ unsure how well gcc applies optimizations to function pointers.
+*/
+void applyModifierPPM(RGBPixel modifier(RGBPixel), PPMImage *img)
+{
+    int i;
+    if(img){
+      for(i=0;i<img->x*img->y;i++){
+              RGBPixel rgb = {
+                RGB_COMPONENT_COLOR-img->data[i].red,
+                RGB_COMPONENT_COLOR-img->data[i].green,
+                RGB_COMPONENT_COLOR-img->data[i].blue,
+              };
+              RGBPixel result = modifier(rgb);
+              img->data[i].red=result.red;
+              img->data[i].green=result.green;
+              img->data[i].blue=result.blue;
+         }
+    }
+}
