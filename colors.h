@@ -1,6 +1,5 @@
 #ifndef COLORS
 #define COLORS
-#include <assert.h>
 #include <stdio.h>
 #include "util.h"
 #define Y_SCALING 16
