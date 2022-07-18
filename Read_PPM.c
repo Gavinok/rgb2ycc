@@ -115,19 +115,6 @@ void writePPM(const char *filename, PPMImage *img)
     fclose(fp);
 }
 
-void changeColorPPM(PPMImage *img)
-{
-    int i;
-    if(img){
-
-         for(i=0;i<img->x*img->y;i++){
-              img->data[i].red=RGB_COMPONENT_COLOR-img->data[i].red;
-              img->data[i].green=RGB_COMPONENT_COLOR-img->data[i].green;
-              img->data[i].blue=RGB_COMPONENT_COLOR-img->data[i].blue;
-         }
-    }
-}
-
 /*
  Apply different modifications to the given image modifier is given as
  a function pointer so new filtering approaches can be applied easily.
@@ -138,16 +125,136 @@ void applyModifierPPM(RGBPixel modifier(RGBPixel), PPMImage *img)
 {
     int i;
     if(img){
-      for(i=0;i<img->x*img->y;i++){
-              RGBPixel rgb = {
-                img->data[i].red,
-                img->data[i].green,
-                img->data[i].blue,
-              };
-              RGBPixel result = modifier(rgb);
-              img->data[i].red=result.red;
-              img->data[i].green=result.green;
-              img->data[i].blue=result.blue;
-         }
+        int width = img->x; 
+        int height = img->y;
+        for(int j=0; j+2<height; j+=2){
+            int start = j * width; 
+            for(int i=start; i+2<(start+width); i+=2){
+                RGBPixel pixelLT = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixelRT = {
+                    img->data[i+1].red,
+                    img->data[i+1].green,
+                    img->data[i+1].blue,
+                };
+                RGBPixel pixelLB = {
+                    img->data[i+width].red,
+                    img->data[i+width].green,
+                    img->data[i+width].blue,
+                };
+                RGBPixel pixelRB = {
+                    img->data[i+width+1].red,
+                    img->data[i+width+1].green,
+                    img->data[i+width+1].blue,
+                };
+                RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB};
+                RGBPixel result = modifier(pixels);
+                img->data[i].red=result[0].red;
+                img->data[i].green=result[0].green;
+                img->data[i].blue=result[0].blue;
+                img->data[i+1].red=result[1].red;
+                img->data[i+1].green=result[1].green;
+                img->data[i+1].blue=result[1].blue;
+                img->data[i+width].red=result[2].red;
+                img->data[i+width].green=result[2].green;
+                img->data[i+width].blue=result[2].blue;
+                img->data[i+width+1].red=result[3].red;
+                img->data[i+width+1].green=result[3].green;
+                img->data[i+width+1].blue=result[3].blue;
+            }
+            if (i+1<(start+width)) {
+                RGBPixel pixelLT = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixelRT = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixelLB = {
+                    img->data[i+width].red,
+                    img->data[i+width].green,
+                    img->data[i+width].blue,
+                };
+                RGBPixel pixelRB = {
+                    img->data[i+width].red,
+                    img->data[i+width].green,
+                    img->data[i+width].blue,
+                };
+                RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB};
+                RGBPixel result = modifier(pixels);
+                img->data[i].red=result[0].red;
+                img->data[i].green=result[0].green;
+                img->data[i].blue=result[0].blue;
+                img->data[i+width].red=result[2].red;
+                img->data[i+width].green=result[2].green;
+                img->data[i+width].blue=result[2].blue;
+            }
+        }
+        if (j < height) {
+            int start = j * width; 
+            for(int i=start; i+2<(start+width); i+=2){
+                RGBPixel pixelLT = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixelRT = {
+                    img->data[i+1].red,
+                    img->data[i+1].green,
+                    img->data[i+1].blue,
+                };
+                RGBPixel pixelLB = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixelRB = {
+                    img->data[i+1].red,
+                    img->data[i+1].green,
+                    img->data[i+1].blue,
+                };
+                RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB};
+                RGBPixel result = modifier(pixels);
+                img->data[i].red=result[0].red;
+                img->data[i].green=result[0].green;
+                img->data[i].blue=result[0].blue;
+                img->data[i+1].red=result[1].red;
+                img->data[i+1].green=result[1].green;
+                img->data[i+1].blue=result[1].blue;
+            }
+            if (i+1<(start+width)) {
+                RGBPixel pixelLT = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixelRT = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixelLB = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixelRB = {
+                    img->data[i].red,
+                    img->data[i].green,
+                    img->data[i].blue,
+                };
+                RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB};
+                RGBPixel result = modifier(pixels);
+                img->data[i].red=result[0].red;
+                img->data[i].green=result[0].green;
+                img->data[i].blue=result[0].blue;
+            }
+        }
     }
 }

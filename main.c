@@ -14,7 +14,7 @@
 #define dbp()
 
 RGBPixel quality_check(RGBPixel p){
-  return ycbcr_to_rgb(rgb_to_ycbcr(p));
+  return ycbcr_to_rgb2(rgb_to_ycbcr2(p));
 }
 
 int main() {
