@@ -31,6 +31,7 @@ RGBPixel ycbcr_to_rgb(YCCPixel color){
   RGBPixel p = {r,g,b};
   return p;
 }
+#define CLAMP(X) ((X > 0) ? X : 0)
 
 YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
   // TODO See if this well ever even need to be clamped
@@ -50,6 +51,7 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
   YCCPixel y_pixels[4];
   int y, c_b, c_r;
   for (int i = 0; i < 4; i++) {
+    // NOTE: y could never actaully be negative
     y = ((YCC_R_R_DOT * pixels[i].red
           + YCC_R_G_DOT * pixels[i].green
           + YCC_R_B_DOT * pixels[i].blue)
@@ -65,13 +67,12 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
             - (YCC_B_B_DOT * pixels[1].blue))
            >> INT_SHIFT)
       + C_SCALING;
-    y = y > 0 ? y : 0;
-    c_b = c_b > 0 ? c_b : 0;
-    c_r = c_r > 0 ? c_r : 0;
+
     YCCPixel p = {
       y,
-      c_b,
-      c_r,
+      // Clamping
+      CLAMP(c_b),
+      CLAMP(c_r),
     };
     y_pixels[i] = p;
   }
@@ -81,8 +82,8 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
     y_pixels[1].y,
     y_pixels[2].y,
     y_pixels[3].y,
-    ((y_pixels[0].c_b + y_pixels[1].c_b + y_pixels[2].c_b + y_pixels[3].c_b) >> 2),
-    ((y_pixels[0].c_r + y_pixels[1].c_r + y_pixels[2].c_r + y_pixels[3].c_r) >> 2)
+    (y_pixels[0].c_b + y_pixels[1].c_b + y_pixels[2].c_b + y_pixels[3].c_b) >> 2,
+    (y_pixels[0].c_r + y_pixels[1].c_r + y_pixels[2].c_r + y_pixels[3].c_r) >> 2
   };
 
   return p;
@@ -129,24 +130,24 @@ RGBPixel* ycbcr_to_rgb2(YCCPixel2 color, RGBPixel* pixels){
   int b_term = (RGB_B_DOT * c_b_s) >> INT_SHIFT;
 
   RGBPixel pixelLT = {
-    (y_lt + r_term) > 0 ? (y_lt + r_term) : 0,
-    (y_lt - g_term) > 0 ? (y_lt - g_term) : 0,
-    (y_lt + b_term) > 0 ? (y_lt + b_term) : 0
+    CLAMP(y_lt + r_term),
+    CLAMP(y_lt - g_term),
+    CLAMP(y_lt + b_term)
   };
   RGBPixel pixelRT = {
-    (y_rt + r_term) > 0 ? (y_rt + r_term) : 0,
-    (y_rt - g_term) > 0 ? (y_rt - g_term) : 0,
-    (y_rt + b_term) > 0 ? (y_rt + b_term) : 0
+    CLAMP(y_rt + r_term),
+    CLAMP(y_rt - g_term),
+    CLAMP(y_rt + b_term)
   };
   RGBPixel pixelLB = {
-    (y_lb + r_term) > 0 ? (y_lb + r_term) : 0,
-    (y_lb - g_term) > 0 ? (y_lb - g_term) : 0,
-    (y_lb + b_term) > 0 ? (y_lb + b_term) : 0
+    CLAMP(y_lb + r_term),
+    CLAMP(y_lb - g_term),
+    CLAMP(y_lb + b_term)
   };
   RGBPixel pixelRB = {
-    (y_rb + r_term) > 0 ? (y_rb + r_term) : 0,
-    (y_rb - g_term) > 0 ? (y_rb - g_term) : 0,
-    (y_rb + b_term) > 0 ? (y_rb + b_term) : 0
+    CLAMP(y_rb + r_term),
+    CLAMP(y_rb - g_term),
+    CLAMP(y_rb + b_term)
   };
 
   pixels[0] = pixelLT;
