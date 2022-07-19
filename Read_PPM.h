@@ -11,6 +11,5 @@ PPMImage *readPPM(const char *filename);
 
 void writePPM(const char *filename, PPMImage *img);
 
-void changeColorPPM(PPMImage *img);
-void applyModifierPPM(RGBPixel modifier(RGBPixel),  PPMImage *img);
+void applyModifierPPM(PPMImage *img);
 #endif

@@ -13,14 +13,10 @@
 
 #define dbp()
 
-RGBPixel quality_check(RGBPixel p){
-  return ycbcr_to_rgb(rgb_to_ycbcr(p));
-}
-
 int main() {
   PPMImage *image;
   image = readPPM("img_forest.ppm");
-  applyModifierPPM(&quality_check, image);
+  applyModifierPPM(image);
   writePPM("img_forest2.ppm", image);
   printf("Press any key...");
   getchar();

@@ -26,6 +26,29 @@ void color_convert_benchmark(RGBPixel rgb){
   printf("\n\n");
 }
 
+void color_convert_benchmark2(RGBPixel* rgb){
+  YCCPixel2 ycc = rgb_to_ycbcr2(rgb);
+  RGBPixel* rgb_final = ycbcr_to_rgb2(ycc);
+  printf("Initial values \n");
+  printf("input red   = %u AND output red  = %u Difference = %d\n", rgb[0].red, rgb_final[0].red,
+         rgb[0].red - rgb_final[0].red);
+  printf("input green = %u AND ouput green = %u Difference = %d\n", rgb[0].green, rgb_final[0].green,
+         rgb[0].green - rgb_final[0].green);
+  printf("input blue  = %u AND ouput blue  = %u Difference = %d\n", rgb[0].blue, rgb_final[0].blue,
+         rgb[0].blue - rgb_final[0].blue);
+  printf("Transitional values where \n");
+  printf("y = %u\n", ycc.lt);
+  printf("c_b = %u\n", ycc.c_b);
+  printf("c_r = %u\n", ycc.c_r);
+
+  // Assert not too much info was lost
+  assert(rgb[0].red - rgb_final[0].red < 4);
+  assert(rgb[0].green - rgb_final[0].green < 4);
+  assert(rgb[0].blue - rgb_final[0].blue < 4);
+
+  printf("\n\n");
+}
+
 int main()
 {
   // Used to check the accuracy of the conversion
@@ -59,9 +82,12 @@ int main()
                      {16, 235, 235},
                      {235, 16, 235},
                      {235, 235, 16},
+                     {235, 16, 235},
+                     {235, 235, 16},
                      {0, 0, 0}};
 
-  for (int i = 0; i < 30; i ++){
-    color_convert_benchmark(rgb[i]);
+  for (int i = 0; i < 32; i+=4){
+    RGBPixel group[4] = {rgb[i], rgb[i+1], rgb[i+2], rgb[i+3]};
+    color_convert_benchmark2(group);
   }
 }
