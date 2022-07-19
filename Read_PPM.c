@@ -1,6 +1,7 @@
 // Credit: Inspired by https://stackoverflow.com/questions/2693631/read-ppm-file-and-store-it-in-an-array-coded-with-c
 
 #include "Read_PPM.h"
+#include "colors.h"
 
 PPMImage *readPPM(const char *filename)
 {
@@ -121,15 +122,15 @@ void writePPM(const char *filename, PPMImage *img)
  This may not be the best way to apply the final version since I am
  unsure how well gcc applies optimizations to function pointers.
 */
-void applyModifierPPM(RGBPixel modifier(RGBPixel), PPMImage *img)
+void applyModifierPPM(PPMImage *img)
 {
-    int i;
+    int i,j;
     if(img){
         int width = img->x; 
         int height = img->y;
-        for(int j=0; j+2<height; j+=2){
+        for(j=0; j+2<height; j+=2){
             int start = j * width; 
-            for(int i=start; i+2<(start+width); i+=2){
+            for(i=start; i+2<(start+width); i+=2){
                 RGBPixel pixelLT = {
                     img->data[i].red,
                     img->data[i].green,
@@ -150,8 +151,10 @@ void applyModifierPPM(RGBPixel modifier(RGBPixel), PPMImage *img)
                     img->data[i+width+1].green,
                     img->data[i+width+1].blue,
                 };
-                RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB};
-                RGBPixel result = modifier(pixels);
+                RGBPixel pixels[4] = {pixelLT, pixelRT, pixelLB, pixelRB};
+                YCCPixel2 yccPixels = rgb_to_ycbcr2(pixels);
+                RGBPixel result[4];
+                ycbcr_to_rgb2(yccPixels, result);
                 img->data[i].red=result[0].red;
                 img->data[i].green=result[0].green;
                 img->data[i].blue=result[0].blue;
@@ -186,8 +189,10 @@ void applyModifierPPM(RGBPixel modifier(RGBPixel), PPMImage *img)
                     img->data[i+width].green,
                     img->data[i+width].blue,
                 };
-                RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB};
-                RGBPixel result = modifier(pixels);
+                RGBPixel pixels[4] = {pixelLT, pixelRT, pixelLB, pixelRB};
+                YCCPixel2 yccPixels = rgb_to_ycbcr2(pixels);
+                RGBPixel result[4];
+                ycbcr_to_rgb2(yccPixels, result);
                 img->data[i].red=result[0].red;
                 img->data[i].green=result[0].green;
                 img->data[i].blue=result[0].blue;
@@ -219,8 +224,10 @@ void applyModifierPPM(RGBPixel modifier(RGBPixel), PPMImage *img)
                     img->data[i+1].green,
                     img->data[i+1].blue,
                 };
-                RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB};
-                RGBPixel result = modifier(pixels);
+                RGBPixel pixels[4] = {pixelLT, pixelRT, pixelLB, pixelRB};
+                YCCPixel2 yccPixels = rgb_to_ycbcr2(pixels);
+                RGBPixel result[4];
+                ycbcr_to_rgb2(yccPixels, result);
                 img->data[i].red=result[0].red;
                 img->data[i].green=result[0].green;
                 img->data[i].blue=result[0].blue;
@@ -249,8 +256,10 @@ void applyModifierPPM(RGBPixel modifier(RGBPixel), PPMImage *img)
                     img->data[i].green,
                     img->data[i].blue,
                 };
-                RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB};
-                RGBPixel result = modifier(pixels);
+                RGBPixel pixels[4] = {pixelLT, pixelRT, pixelLB, pixelRB};
+                YCCPixel2 yccPixels = rgb_to_ycbcr2(pixels);
+                RGBPixel result[4];
+                ycbcr_to_rgb2(yccPixels, result);
                 img->data[i].red=result[0].red;
                 img->data[i].green=result[0].green;
                 img->data[i].blue=result[0].blue;

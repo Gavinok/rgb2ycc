@@ -49,12 +49,19 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
 
   // Pass 2: Use averaging
   YCCPixel y_pixels[4];
+  int y, c_b, c_r;
   for (int i = 0; i < 4; i++) {
+    y = ((257 * pixels[i].red / 1000) + (504 * pixels[i].green / 1000) + (98 * pixels[i].blue / 1000)) + Y_SCALING;
+    c_b = ((-148 * pixels[1].red / 1000) - (291 * pixels[1].green / 1000) + (439 * pixels[1].blue / 1000)) + C_SCALING;
+    c_r = ((439 * pixels[1].red / 1000) - (368 * pixels[1].green / 1000) - (71 * pixels[1].blue / 1000)) + C_SCALING;
+    y = y > 0 ? y : 0;
+    c_b = c_b > 0 ? c_b : 0;
+    c_r = c_r > 0 ? c_r : 0;
     YCCPixel p = {
-      ((257 * pixels[i].red / 1000) + (504 * pixels[i].green / 1000) + (98 * pixels[i].blue / 1000)) + Y_SCALING,
-      ((-148 * pixels[1].red / 1000) - (291 * pixels[1].green / 1000) + (439 * pixels[1].blue / 1000)) + C_SCALING,
-      ((439 * pixels[1].red / 1000) - (368 * pixels[1].green / 1000) - (71 * pixels[1].blue / 1000)) + C_SCALING,
-    }
+      y,
+      c_b,
+      c_r,
+    };
     y_pixels[i] = p;
   }
 
@@ -65,12 +72,12 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
     y_pixels[3].y,
     ((y_pixels[0].c_b + y_pixels[1].c_b + y_pixels[2].c_b + y_pixels[3].c_b) / 4),
     ((y_pixels[0].c_r + y_pixels[1].c_r + y_pixels[2].c_r + y_pixels[3].c_r) / 4)
-  }
+  };
 
   return p;
 }
 
-RGBPixel* ycbcr_to_rgb2(YCCPixel2 color){
+RGBPixel* ycbcr_to_rgb2(YCCPixel2 color, RGBPixel* pixels){
   // Pass 1: Bad math
   // int y_lt = color.lt - Y_SCALING;
   // int y_rt = color.rt - Y_SCALING;
@@ -109,27 +116,31 @@ RGBPixel* ycbcr_to_rgb2(YCCPixel2 color){
   int r_term = 1596 * c_r_s / 1000;
   int g_term = (813 * c_r_s / 1000) - (391 * c_b_s / 1000);
   int b_term = 2018 * c_b_s / 1000;
+
   RGBPixel pixelLT = {
-    (y_lt + r_term),
-    (y_lt - g_term),
-    (y_lt + b_term)
+    (y_lt + r_term) > 0 ? (y_lt + r_term) : 0,
+    (y_lt - g_term) > 0 ? (y_lt - g_term) : 0,
+    (y_lt + b_term) > 0 ? (y_lt + b_term) : 0
   };
   RGBPixel pixelRT = {
-    (y_rt + r_term),
-    (y_rt - g_term),
-    (y_rt + b_term)
+    (y_rt + r_term) > 0 ? (y_rt + r_term) : 0,
+    (y_rt - g_term) > 0 ? (y_rt - g_term) : 0,
+    (y_rt + b_term) > 0 ? (y_rt + b_term) : 0
   };
   RGBPixel pixelLB = {
-    (y_lb + r_term),
-    (y_lb - g_term),
-    (y_lb + b_term)
+    (y_lb + r_term) > 0 ? (y_lb + r_term) : 0,
+    (y_lb - g_term) > 0 ? (y_lb - g_term) : 0,
+    (y_lb + b_term) > 0 ? (y_lb + b_term) : 0
   };
   RGBPixel pixelRB = {
-    (y_rb + r_term),
-    (y_rb - g_term),
-    (y_rb + b_term)
+    (y_rb + r_term) > 0 ? (y_rb + r_term) : 0,
+    (y_rb - g_term) > 0 ? (y_rb - g_term) : 0,
+    (y_rb + b_term) > 0 ? (y_rb + b_term) : 0
   };
 
-  RGBPixel pixels[] = {pixelLT, pixelRT, pixelLB, pixelRB}
+  pixels[0] = pixelLT;
+  pixels[1] = pixelRT;
+  pixels[2] = pixelLB;
+  pixels[3] = pixelRB;
   return pixels;
 }

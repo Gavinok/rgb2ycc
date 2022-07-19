@@ -14,8 +14,7 @@ all: rgb2ycc
 # This is just here to generate a json file for your text editor to
 # use. Simply run `make compile_commands.json`
 ifeq ($(CC), clang)
-CLANGFLAGS=-MJ tmp.json
-CFLAGS=$(DEVFLAGS) $(CLANGFLAGS)
+CFLAGS=$(DEVFLAGS)
 
 # Produce file for use with editor
 compile_commands.json: tmp.json
