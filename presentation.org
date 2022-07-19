@@ -1,0 +1,35 @@
+#+Title: RGB To YCC Color - Space Conversion With Embedded Systems
+#+AUTHOR: Gavin Jaeger-Freeborn & 
+* Outline
+- Background
+- Design Challenges and Decision
+- Code Overview
+- Optimizations
+- Possible New Instruction
+- Final Results
+* Background Info
+# Explain what SVD is it's purpose etc
+- Colorspaces used in images
+- What is RGB?
+- What is YCbCr?
+- Why Use YCbCr?
+- Conversion Process
+* Design Challenges
+- Moving to integer arithmetic
+* Your Work Plan
+* High Level Description Of Code
+# Code Before Optimization
+* TODO Optimization 1
+* TODO Optimization 2
+* TODO Optimization 3
+# Remember to look at BARR C methods
+* TODO Check ASM
+# One optimization technique is enough
+# - (hardest to implement)
+* TODO New Instruction
+* TODO Numerical Result And Discussions
+# *Side By Side Comparison*
+# Pure software, with NEON instruction, new instruction, hardware
+# solution, etc
+* Conclusion
+# 3-4 bullets highlighting the most important things we found
