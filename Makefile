@@ -1,8 +1,10 @@
-# Be sure to change this to gcc when we move to arm
+# To build for arm run `make CC=arm-linux-gcc`
+ARMCC=arm-linux-gcc
 CC=clang
 # These are mostly here to on to cover our buts during the base setup
-DEVFLAGS= -Wall -Wextra -fsanitize=address -fsanitize=undefined
-CFLAGS=$(DEVFLAGS)
+DEVFLAGS= -fsanitize=address -fsanitize=undefined
+CFLAGS= -std=c99 -Wall -Wextra
+ASMCFLAGS= -static -S
 LIB = colors.c Read_PPM.c
 SRC = $(LIB) main.c
 OBJ = ${SRC:.c=.o}
@@ -30,6 +32,10 @@ endif
 # Create the object files for our libraries
 .c.o:
 	$(CC) -c $(CFLAGS) $<
+
+# You can now peak at the asm output by running `make main.s`
+.c.s:
+	$(ARMCC) -c $(ASMCFLAGS) $<
 
 # Generate the final executable
 rgb2ycc: $(OBJ)
