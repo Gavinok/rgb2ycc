@@ -2,33 +2,12 @@
    conversion. To try it run `make test` */
 #include "colors.h"
 #include <assert.h>
-
-void color_convert_benchmark(RGBPixel rgb){
-  YCCPixel ycc = rgb_to_ycbcr(rgb);
-  RGBPixel rgb_final = ycbcr_to_rgb(ycc);
-  printf("Initial values \n");
-  printf("input red   = %u AND output red  = %u Difference = %d\n", rgb.red, rgb_final.red,
-         rgb.red - rgb_final.red);
-  printf("input green = %u AND ouput green = %u Difference = %d\n", rgb.green, rgb_final.green,
-         rgb.green - rgb_final.green);
-  printf("input blue  = %u AND ouput blue  = %u Difference = %d\n", rgb.blue, rgb_final.blue,
-         rgb.blue - rgb_final.blue);
-  printf("Transitional values where \n");
-  printf("y = %u\n", ycc.y);
-  printf("c_b = %u\n", ycc.c_b);
-  printf("c_r = %u\n", ycc.c_r);
-
-  // Assert not too much info was lost
-  assert(rgb.red - rgb_final.red < 4);
-  assert(rgb.green - rgb_final.green < 4);
-  assert(rgb.blue - rgb_final.blue < 4);
-
-  printf("\n\n");
-}
+#include <stdlib.h>
 
 void color_convert_benchmark2(RGBPixel* rgb){
   YCCPixel2 ycc = rgb_to_ycbcr2(rgb);
-  RGBPixel* rgb_final = ycbcr_to_rgb2(ycc);
+  RGBPixel* p = malloc(sizeof(RGBPixel[4]));
+  RGBPixel* rgb_final = ycbcr_to_rgb2(ycc, p);
   printf("Initial values \n");
   printf("input red   = %u AND output red  = %u Difference = %d\n", rgb[0].red, rgb_final[0].red,
          rgb[0].red - rgb_final[0].red);
@@ -43,9 +22,10 @@ void color_convert_benchmark2(RGBPixel* rgb){
 
   // Assert not too much info was lost
   assert(rgb[0].red - rgb_final[0].red < 4);
+  printf("%d", rgb[0].green - rgb_final[0].green);
   assert(rgb[0].green - rgb_final[0].green < 4);
   assert(rgb[0].blue - rgb_final[0].blue < 4);
-
+  free(p);
   printf("\n\n");
 }
 
@@ -87,7 +67,7 @@ int main()
                      {0, 0, 0}};
 
   for (int i = 0; i < 32; i+=4){
-    RGBPixel group[4] = {rgb[i], rgb[i+1], rgb[i+2], rgb[i+3]};
+    RGBPixel group[4] = {rgb[i], rgb[i], rgb[i], rgb[i]};
     color_convert_benchmark2(group);
   }
 }
