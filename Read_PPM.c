@@ -126,144 +126,59 @@ void applyModifierPPM(PPMImage *img)
 {
     int i,j;
     if(img){
-        int width = img->x; 
-        int height = img->y;
-        for(j=0; j+2<height; j+=2){
-            int start = j * width; 
-            for(i=start; i+2<(start+width); i+=2){
-                RGBPixel pixelLT = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixelRT = {
-                    img->data[i+1].red,
-                    img->data[i+1].green,
-                    img->data[i+1].blue,
-                };
-                RGBPixel pixelLB = {
-                    img->data[i+width].red,
-                    img->data[i+width].green,
-                    img->data[i+width].blue,
-                };
-                RGBPixel pixelRB = {
-                    img->data[i+width+1].red,
-                    img->data[i+width+1].green,
-                    img->data[i+width+1].blue,
-                };
-                RGBPixel pixels[4] = {pixelLT, pixelRT, pixelLB, pixelRB};
-                YCCPixel2 yccPixels = rgb_to_ycbcr2(pixels);
-                RGBPixel result[4];
-                ycbcr_to_rgb2(yccPixels, result);
-                img->data[i].red=result[0].red;
-                img->data[i].green=result[0].green;
-                img->data[i].blue=result[0].blue;
-                img->data[i+1].red=result[1].red;
-                img->data[i+1].green=result[1].green;
-                img->data[i+1].blue=result[1].blue;
-                img->data[i+width].red=result[2].red;
-                img->data[i+width].green=result[2].green;
-                img->data[i+width].blue=result[2].blue;
-                img->data[i+width+1].red=result[3].red;
-                img->data[i+width+1].green=result[3].green;
-                img->data[i+width+1].blue=result[3].blue;
-            }
-            if (i+1<(start+width)) {
-                RGBPixel pixelLT = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixelRT = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixelLB = {
-                    img->data[i+width].red,
-                    img->data[i+width].green,
-                    img->data[i+width].blue,
-                };
-                RGBPixel pixelRB = {
-                    img->data[i+width].red,
-                    img->data[i+width].green,
-                    img->data[i+width].blue,
-                };
-                RGBPixel pixels[4] = {pixelLT, pixelRT, pixelLB, pixelRB};
-                YCCPixel2 yccPixels = rgb_to_ycbcr2(pixels);
-                RGBPixel result[4];
-                ycbcr_to_rgb2(yccPixels, result);
-                img->data[i].red=result[0].red;
-                img->data[i].green=result[0].green;
-                img->data[i].blue=result[0].blue;
-                img->data[i+width].red=result[2].red;
-                img->data[i+width].green=result[2].green;
-                img->data[i+width].blue=result[2].blue;
-            }
+      int width = img->x;
+      int height = img->y;
+      RGBPixel result[4];
+      for(j=0; j+2<height; j+=2){
+        int start = j * width;
+        for(i=start; i+2<(start+width); i+=2){
+          YCCPixel2 yccPixels = rgb_to_ycbcr2((RGBPixel[4]){
+              img->data[i],
+              img->data[i+1],
+              img->data[i+width],
+              img->data[i+width+1],
+            });
+          ycbcr_to_rgb2(yccPixels, result);
+          img->data[i] = result[0];
+          img->data[i+1] = result[1];
+          img->data[i+width] = result[2];
+          img->data[i+width+1] = result[3];
         }
-        if (j < height) {
-            int start = j * width; 
-            for(int i=start; i+2<(start+width); i+=2){
-                RGBPixel pixelLT = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixelRT = {
-                    img->data[i+1].red,
-                    img->data[i+1].green,
-                    img->data[i+1].blue,
-                };
-                RGBPixel pixelLB = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixelRB = {
-                    img->data[i+1].red,
-                    img->data[i+1].green,
-                    img->data[i+1].blue,
-                };
-                RGBPixel pixels[4] = {pixelLT, pixelRT, pixelLB, pixelRB};
-                YCCPixel2 yccPixels = rgb_to_ycbcr2(pixels);
-                RGBPixel result[4];
-                ycbcr_to_rgb2(yccPixels, result);
-                img->data[i].red=result[0].red;
-                img->data[i].green=result[0].green;
-                img->data[i].blue=result[0].blue;
-                img->data[i+1].red=result[1].red;
-                img->data[i+1].green=result[1].green;
-                img->data[i+1].blue=result[1].blue;
-            }
-            if (i+1<(start+width)) {
-                RGBPixel pixelLT = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixelRT = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixelLB = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixelRB = {
-                    img->data[i].red,
-                    img->data[i].green,
-                    img->data[i].blue,
-                };
-                RGBPixel pixels[4] = {pixelLT, pixelRT, pixelLB, pixelRB};
-                YCCPixel2 yccPixels = rgb_to_ycbcr2(pixels);
-                RGBPixel result[4];
-                ycbcr_to_rgb2(yccPixels, result);
-                img->data[i].red=result[0].red;
-                img->data[i].green=result[0].green;
-                img->data[i].blue=result[0].blue;
-            }
+        if (i+1<(start+width)) {
+          YCCPixel2 yccPixels = rgb_to_ycbcr2((RGBPixel[4]){
+              img->data[i],
+              img->data[i],
+              img->data[i+width],
+              img->data[i+width],
+            });
+          ycbcr_to_rgb2(yccPixels, result);
+          img->data[i] = result[0];
+          img->data[i+width] = result[2];
         }
+      }
+      if (j < height) {
+        int start = j * width;
+        for(int i=start; i+2<(start+width); i+=2){
+          YCCPixel2 yccPixels = rgb_to_ycbcr2((RGBPixel[4]){
+              img->data[i],
+              img->data[i+1],
+              img->data[i],
+              img->data[i+1],
+            });
+          ycbcr_to_rgb2(yccPixels, result);
+          img->data[i] = result[0];
+          img->data[i+1] = result[1];
+        }
+        if (i+1<(start+width)) {
+          YCCPixel2 yccPixels = rgb_to_ycbcr2((RGBPixel[4]){
+              img->data[i],
+              img->data[i],
+              img->data[i],
+              img->data[i]
+            });
+          ycbcr_to_rgb2(yccPixels, result);
+          img->data[i] = result[0];
+        }
+      }
     }
 }
