@@ -132,26 +132,26 @@ void applyModifierPPM(PPMImage *img)
       for(j=0; j+2<height; j+=2){
         int start = j * width;
         for(i=start; i+2<(start+width); i+=2){
-          YCCPixel2 yccPixels = rgb_to_ycbcr2((RGBPixel[4]){
-              img->data[i],
-              img->data[i+1],
-              img->data[i+width],
-              img->data[i+width+1],
+          YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
+              &img->data[i],
+              &img->data[i+1],
+              &img->data[i+width],
+              &img->data[i+width+1],
             });
-          ycbcr_to_rgb2(yccPixels, result);
+          ycbcr_to_rgb2(&yccPixels, result);
           img->data[i] = result[0];
           img->data[i+1] = result[1];
           img->data[i+width] = result[2];
           img->data[i+width+1] = result[3];
         }
         if (i+1<(start+width)) {
-          YCCPixel2 yccPixels = rgb_to_ycbcr2((RGBPixel[4]){
-              img->data[i],
-              img->data[i],
-              img->data[i+width],
-              img->data[i+width],
+          YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
+              &img->data[i],
+              &img->data[i],
+              &img->data[i+width],
+              &img->data[i+width],
             });
-          ycbcr_to_rgb2(yccPixels, result);
+          ycbcr_to_rgb2(&yccPixels, result);
           img->data[i] = result[0];
           img->data[i+width] = result[2];
         }
@@ -159,24 +159,24 @@ void applyModifierPPM(PPMImage *img)
       if (j < height) {
         int start = j * width;
         for(int i=start; i+2<(start+width); i+=2){
-          YCCPixel2 yccPixels = rgb_to_ycbcr2((RGBPixel[4]){
-              img->data[i],
-              img->data[i+1],
-              img->data[i],
-              img->data[i+1],
+          YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
+              &img->data[i],
+              &img->data[i+1],
+              &img->data[i],
+              &img->data[i+1],
             });
-          ycbcr_to_rgb2(yccPixels, result);
+          ycbcr_to_rgb2(&yccPixels, result);
           img->data[i] = result[0];
           img->data[i+1] = result[1];
         }
         if (i+1<(start+width)) {
-          YCCPixel2 yccPixels = rgb_to_ycbcr2((RGBPixel[4]){
-              img->data[i],
-              img->data[i],
-              img->data[i],
-              img->data[i]
+          YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
+              &img->data[i],
+              &img->data[i],
+              &img->data[i],
+              &img->data[i]
             });
-          ycbcr_to_rgb2(yccPixels, result);
+          ycbcr_to_rgb2(&yccPixels, result);
           img->data[i] = result[0];
         }
       }
