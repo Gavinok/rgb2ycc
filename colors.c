@@ -1,5 +1,23 @@
 #include "colors.h"
-
+// https://bright.uvic.ca/d2l/le/content/204143/viewContent/1720844/View
+// since we are using gcc asm inlining is required
+// TODO add an ifdef to handle the possible wrap around
+#ifdef ARM
+int add( register int a, register int b){
+  register int sum ;
+  __asm__ __volatile__ (
+                        "qadd\t %0, %1, %2\n"
+                        : "=r" ( sum )
+                        : "r" ( a ) , "r" ( b )
+                        );
+  return( sum );
+}
+#else
+int add( register int a, register int b){
+  register int sum = a + b;
+  return sum ;
+}
+#endif
 YCCPixel rgb_to_ycbcr(RGBPixel color){
   // TODO See if this well ever even need to be clamped
   // TODO convert to integer arithmetic (should be relitively simple)
