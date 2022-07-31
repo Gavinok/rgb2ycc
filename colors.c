@@ -51,6 +51,8 @@ RGBPixel ycbcr_to_rgb(YCCPixel color){
 }
 #define CLAMP(X) ((X > 0) ? X : 0)
 
+#define nCLAMP(X, min, max) (X > max ? max : ((X > min) ? X : min))
+
 YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
   // TODO See if this well ever even need to be clamped
   // Convert to accept 4 RGB Pixels
@@ -67,8 +69,8 @@ YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
 
   // Pass 2: Use averaging
   YCCPixel y_pixels[4];
-  int y, c_b, c_r;
-  for (int i = 0; i < 4; i++) {
+  int i, y, c_b, c_r;
+  for (i = 0; i < 4; i++) {
     // NOTE: y could never actaully be negative
     y = ((YCC_R_R_DOT * pixels[i]->red
           + YCC_R_G_DOT * pixels[i]->green
@@ -87,10 +89,9 @@ YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
       + C_SCALING;
 
     YCCPixel p = {
-      y,
-      // Clamping
-      CLAMP(c_b),
-      CLAMP(c_r),
+      nCLAMP(y, 16, 235),
+      nCLAMP(c_b, 16, 235),
+      nCLAMP(c_r, 16, 235),
     };
     y_pixels[i] = p;
   }
@@ -137,40 +138,39 @@ RGBPixel* ycbcr_to_rgb2(const YCCPixel2* color, RGBPixel* pixels){
   // };
 
   // Pass 2: Better math:
-  int y_lt = (RGB_Y_DOT * (color->lt - Y_SCALING)) >> INT_SHIFT;
-  int y_rt = (RGB_Y_DOT * (color->rt - Y_SCALING)) >> INT_SHIFT;
-  int y_lb = (RGB_Y_DOT * (color->lb - Y_SCALING)) >> INT_SHIFT;
-  int y_rb = (RGB_Y_DOT * (color->rb - Y_SCALING)) >> INT_SHIFT;
-  int c_b_s = color->c_b - C_SCALING;
-  int c_r_s = color->c_r - C_SCALING;
-  int r_term = (RGB_R_DOT * c_r_s) >> INT_SHIFT;
-  int g_term = ((RGB_G_R_DOT * c_r_s) - (RGB_G_B_DOT * c_b_s)) >> INT_SHIFT;
-  int b_term = (RGB_B_DOT * c_b_s) >> INT_SHIFT;
+  const int y_lt = (RGB_Y_DOT * (color->lt - Y_SCALING));
+  const int y_rt = (RGB_Y_DOT * (color->rt - Y_SCALING));
+  const int y_lb = (RGB_Y_DOT * (color->lb - Y_SCALING));
+  const int y_rb = (RGB_Y_DOT * (color->rb - Y_SCALING));
+  const int c_b_s = color->c_b - C_SCALING;
+  const int c_r_s = color->c_r - C_SCALING;
+  const int r_term = (RGB_R_DOT * c_r_s);
+  const int b_term = (RGB_B_DOT * c_b_s);
 
-  RGBPixel pixelLT = {
-    CLAMP(y_lt + r_term),
-    CLAMP(y_lt - g_term),
-    CLAMP(y_lt + b_term)
+  // Due to order of opperations we can't do this ahead of time
+  /* int g_term = ((RGB_G_R_DOT * c_r_s) - (RGB_G_B_DOT * c_b_s)); */
+
+  // Defering the bit shifting seems to preserve more accuracy
+  pixels[0] = (RGBPixel){
+    nCLAMP((y_lt + r_term) >> INT_SHIFT, 0, 255),
+    nCLAMP((y_lt - RGB_G_R_DOT*(c_r_s) - RGB_G_B_DOT*(c_b_s)) >> INT_SHIFT, 0, 255), // Can't shorten due to order of opperations
+    nCLAMP((y_lt + b_term) >> INT_SHIFT, 0, 255),
   };
-  RGBPixel pixelRT = {
-    CLAMP(y_rt + r_term),
-    CLAMP(y_rt - g_term),
-    CLAMP(y_rt + b_term)
+  pixels[1] = (RGBPixel){
+    nCLAMP((y_rt + r_term) >> INT_SHIFT, 0, 255),
+    nCLAMP((y_rt - RGB_G_R_DOT*(c_r_s) - RGB_G_B_DOT*(c_b_s)) >> INT_SHIFT, 0, 255),
+    nCLAMP((y_rt + b_term) >> INT_SHIFT, 0, 255)
   };
-  RGBPixel pixelLB = {
-    CLAMP(y_lb + r_term),
-    CLAMP(y_lb - g_term),
-    CLAMP(y_lb + b_term)
+  pixels[2] = (RGBPixel){
+    nCLAMP((y_lb + r_term) >> INT_SHIFT, 0, 255),
+    nCLAMP((y_lb - RGB_G_R_DOT*(c_r_s) - RGB_G_B_DOT*(c_b_s)) >> INT_SHIFT, 0, 255),
+    nCLAMP((y_lb + b_term) >> INT_SHIFT, 0, 255)
   };
-  RGBPixel pixelRB = {
-    CLAMP(y_rb + r_term),
-    CLAMP(y_rb - g_term),
-    CLAMP(y_rb + b_term)
+  pixels[3] = (RGBPixel){
+    nCLAMP((y_rb + r_term) >> INT_SHIFT, 0, 255),
+    nCLAMP((y_rb - RGB_G_R_DOT*(c_r_s) - RGB_G_B_DOT*(c_b_s)) >> INT_SHIFT, 0, 255),
+    nCLAMP((y_rb + b_term) >> INT_SHIFT, 0, 255)
   };
 
-  pixels[0] = pixelLT;
-  pixels[1] = pixelRT;
-  pixels[2] = pixelLB;
-  pixels[3] = pixelRB;
   return pixels;
 }
