@@ -68,8 +68,8 @@ YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
   // }
 
   // Pass 2: Use averaging
-  YCCPixel y_pixels[4];
-  int i, y, c_b, c_r;
+  unsigned char y_pixels[4];
+  int i, y, c_b = 0, c_r = 0;
   for (i = 0; i < 4; i++) {
     // NOTE: y could never actaully be negative
     y = ((YCC_R_R_DOT * pixels[i]->red
@@ -77,32 +77,30 @@ YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
           + YCC_R_B_DOT * pixels[i]->blue)
          >> INT_SHIFT)
       + Y_SCALING;
-    c_b = (((YCC_G_R_DOT * pixels[1]->red)
-            - (YCC_G_G_DOT * pixels[1]->green)
-            + (YCC_G_B_DOT * pixels[1]->blue))
-           >> INT_SHIFT)
-      + C_SCALING;
-    c_r = (((YCC_B_R_DOT * pixels[1]->red)
-            - (YCC_B_G_DOT * pixels[1]->green)
-            - (YCC_B_B_DOT * pixels[1]->blue))
-           >> INT_SHIFT)
-      + C_SCALING;
 
-    YCCPixel p = {
-      nCLAMP(y, 16, 235),
-      nCLAMP(c_b, 16, 235),
-      nCLAMP(c_r, 16, 235),
-    };
-    y_pixels[i] = p;
+    c_b += nCLAMP(
+                  (((YCC_G_R_DOT * pixels[i]->red)
+                    - (YCC_G_G_DOT * pixels[i]->green)
+                    + (YCC_G_B_DOT * pixels[i]->blue))
+                   >> INT_SHIFT)
+                  + C_SCALING , 16, 235);
+
+    c_r += nCLAMP((((YCC_B_R_DOT * pixels[i]->red)
+                    - (YCC_B_G_DOT * pixels[i]->green)
+                    - (YCC_B_B_DOT * pixels[i]->blue))
+                   >> INT_SHIFT)
+                  + C_SCALING, 16, 235);
+
+    y_pixels[i] = nCLAMP(y, 16, 235);
   }
 
   YCCPixel2 p = {
-    y_pixels[0].y,
-    y_pixels[1].y,
-    y_pixels[2].y,
-    y_pixels[3].y,
-    (y_pixels[0].c_b + y_pixels[1].c_b + y_pixels[2].c_b + y_pixels[3].c_b) >> 2,
-    (y_pixels[0].c_r + y_pixels[1].c_r + y_pixels[2].c_r + y_pixels[3].c_r) >> 2
+    y_pixels[0],
+    y_pixels[1],
+    y_pixels[2],
+    y_pixels[3],
+    (c_b) >> 2,
+    (c_r) >> 2
   };
 
   return p;
