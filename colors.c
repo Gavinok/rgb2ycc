@@ -33,7 +33,7 @@ RGBPixel ycbcr_to_rgb(YCCPixel color){
 }
 #define CLAMP(X) ((X > 0) ? X : 0)
 
-YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
+YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
   // TODO See if this well ever even need to be clamped
   // Convert to accept 4 RGB Pixels
   // Pass 1: pre-calculate the first C values and just use those in the other 4
@@ -52,19 +52,19 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
   int y, c_b, c_r;
   for (int i = 0; i < 4; i++) {
     // NOTE: y could never actaully be negative
-    y = ((YCC_R_R_DOT * pixels[i].red
-          + YCC_R_G_DOT * pixels[i].green
-          + YCC_R_B_DOT * pixels[i].blue)
+    y = ((YCC_R_R_DOT * pixels[i]->red
+          + YCC_R_G_DOT * pixels[i]->green
+          + YCC_R_B_DOT * pixels[i]->blue)
          >> INT_SHIFT)
       + Y_SCALING;
-    c_b = (((YCC_G_R_DOT * pixels[1].red)
-            - (YCC_G_G_DOT * pixels[1].green)
-            + (YCC_G_B_DOT * pixels[1].blue))
+    c_b = (((YCC_G_R_DOT * pixels[1]->red)
+            - (YCC_G_G_DOT * pixels[1]->green)
+            + (YCC_G_B_DOT * pixels[1]->blue))
            >> INT_SHIFT)
       + C_SCALING;
-    c_r = (((YCC_B_R_DOT * pixels[1].red)
-            - (YCC_B_G_DOT * pixels[1].green)
-            - (YCC_B_B_DOT * pixels[1].blue))
+    c_r = (((YCC_B_R_DOT * pixels[1]->red)
+            - (YCC_B_G_DOT * pixels[1]->green)
+            - (YCC_B_B_DOT * pixels[1]->blue))
            >> INT_SHIFT)
       + C_SCALING;
 
@@ -89,7 +89,7 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
   return p;
 }
 
-RGBPixel* ycbcr_to_rgb2(YCCPixel2 color, RGBPixel* pixels){
+RGBPixel* ycbcr_to_rgb2(const YCCPixel2* color, RGBPixel* pixels){
   // Pass 1: Bad math
   // int y_lt = color.lt - Y_SCALING;
   // int y_rt = color.rt - Y_SCALING;
@@ -119,12 +119,12 @@ RGBPixel* ycbcr_to_rgb2(YCCPixel2 color, RGBPixel* pixels){
   // };
 
   // Pass 2: Better math:
-  int y_lt = (RGB_Y_DOT * (color.lt - Y_SCALING)) >> INT_SHIFT;
-  int y_rt = (RGB_Y_DOT * (color.rt - Y_SCALING)) >> INT_SHIFT;
-  int y_lb = (RGB_Y_DOT * (color.lb - Y_SCALING)) >> INT_SHIFT;
-  int y_rb = (RGB_Y_DOT * (color.rb - Y_SCALING)) >> INT_SHIFT;
-  int c_b_s = color.c_b - C_SCALING;
-  int c_r_s = color.c_r - C_SCALING;
+  int y_lt = (RGB_Y_DOT * (color->lt - Y_SCALING)) >> INT_SHIFT;
+  int y_rt = (RGB_Y_DOT * (color->rt - Y_SCALING)) >> INT_SHIFT;
+  int y_lb = (RGB_Y_DOT * (color->lb - Y_SCALING)) >> INT_SHIFT;
+  int y_rb = (RGB_Y_DOT * (color->rb - Y_SCALING)) >> INT_SHIFT;
+  int c_b_s = color->c_b - C_SCALING;
+  int c_r_s = color->c_r - C_SCALING;
   int r_term = (RGB_R_DOT * c_r_s) >> INT_SHIFT;
   int g_term = ((RGB_G_R_DOT * c_r_s) - (RGB_G_B_DOT * c_b_s)) >> INT_SHIFT;
   int b_term = (RGB_B_DOT * c_b_s) >> INT_SHIFT;
