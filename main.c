@@ -18,6 +18,4 @@ int main() {
   image = readPPM("img_forest.ppm");
   applyModifierPPM(image);
   writePPM("img_forest2.ppm", image);
-  printf("Press any key...");
-  getchar();
 }
