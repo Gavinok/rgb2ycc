@@ -35,7 +35,7 @@ endif
 
 # You can now peak at the asm output by running `make main.s`
 .c.s:
-	$(ARMCC) -c $(ASMCFLAGS) $<
+	$(ARMCC) -DARM -c $(ASMCFLAGS) $<
 
 # Generate the final executable
 rgb2ycc: $(OBJ)
