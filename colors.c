@@ -142,9 +142,9 @@ RGBPixel* ycbcr_to_rgb2(const YCCPixel2* color, RGBPixel* pixels){
   const int y_rb = (RGB_Y_DOT * (color->rb - Y_SCALING));
   const int c_b_s = color->c_b - C_SCALING;
   const int c_r_s = color->c_r - C_SCALING;
+  const int r_term = (RGB_R_DOT * c_r_s);
   const int g_term_0 =  RGB_G_R_DOT*(c_r_s);
   const int g_term_1 =  RGB_G_B_DOT*(c_b_s);
-  const int r_term = (RGB_R_DOT * c_r_s);
   const int b_term = (RGB_B_DOT * c_b_s);
 
   // Due to order of opperations we can't do this ahead of time
