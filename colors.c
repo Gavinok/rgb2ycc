@@ -58,19 +58,10 @@ YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
   // Convert to accept 4 RGB Pixels
   // Pass 1: pre-calculate the first C values and just use those in the other 4
 
-  // YCCPixel2 p = {
-  //   ((257 * pixels[0].red / 1000) + (504 * pixels[0].green / 1000) + (98 * pixels[0].blue / 1000)) + Y_SCALING,
-  //   ((257 * pixels[1].red / 1000) + (504 * pixels[1].green / 1000) + (98 * pixels[1].blue / 1000)) + Y_SCALING,
-  //   ((257 * pixels[2].red / 1000) + (504 * pixels[2].green / 1000) + (98 * pixels[2].blue / 1000)) + Y_SCALING,
-  //   ((257 * pixels[3].red / 1000) + (504 * pixels[3].green / 1000) + (98 * pixels[3].blue / 1000)) + Y_SCALING,
-  //   ((-148 * pixels[0].red / 1000) - (291 * pixels[0].green / 1000) + (439 * pixels[0].blue / 1000)) + C_SCALING,
-  //   ((439 * pixels[0].red / 1000) - (368 * pixels[0].green / 1000) - (71 * pixels[0].blue / 1000)) + C_SCALING
-  // }
-
   // Pass 2: Use averaging
-  unsigned char y_pixels[4];
-  int i, y, c_b = 0, c_r = 0;
-  for (i = 0; i < 4; i++) {
+  uint8_t y_pixels[4];
+  int32_t y, c_b = 0, c_r = 0;
+  for (uint8_t i = 0; i < 4; i++) {
     // NOTE: y could never actaully be negative
     y = ((YCC_R_R_DOT * pixels[i]->red
           + YCC_R_G_DOT * pixels[i]->green
@@ -107,69 +98,40 @@ YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
 }
 
 RGBPixel* ycbcr_to_rgb2(const YCCPixel2* color, RGBPixel* pixels){
-  // Pass 1: Bad math
-  // int y_lt = color.lt - Y_SCALING;
-  // int y_rt = color.rt - Y_SCALING;
-  // int y_lb = color.lb - Y_SCALING;
-  // int y_rb = color.rb - Y_SCALING;
-  // int c_b_s = color.c_b - C_SCALING;
-  // int c_r_s = color.c_r - C_SCALING;
-  // RGBPixel pixelLT = {
-  //   ((1164 * y_lt / 1000) + (1596 * c_r_s / 1000)),
-  //   ((1164 * y_lt / 1000) - (813 * c_r_s / 1000) - (391 * c_b_s / 1000)),
-  //   ((1164 * y_lt / 1000) + (2018 * c_b_s / 1000))
-  // };
-  // RGBPixel pixelRT = {
-  //   ((1164 * y_rt / 1000) + (1596 * c_r_s / 1000)),
-  //   ((1164 * y_rt / 1000) - (813 * c_r_s / 1000) - (391 * c_b_s / 1000)),
-  //   ((1164 * y_rt / 1000) + (2018 * c_b_s / 1000))
-  // };
-  // RGBPixel pixelLB = {
-  //   ((1164 * y_lb / 1000) + (257 * c_r_s / 1000)),
-  //   ((1164 * y_lb / 1000) - (813 * c_r_s / 1000) - (391 * c_b_s / 1000)),
-  //   ((1164 * y_lb / 1000) + (2018 * c_b_s / 1000))
-  // };
-  // RGBPixel pixelRB = {
-  //   ((1164 * y_rb / 1000) + (RGB_R_DOT * c_r_s / 1000)),
-  //   ((1164 * y_rb / 1000) - (813 * c_r_s / 1000) - (391 * c_b_s / 1000)),
-  //   ((1164 * y_rb / 1000) + (2018 * c_b_s / 1000))
-  // };
-
-  // Pass 2: Better math:
-  const int y_lt = (RGB_Y_DOT * (color->lt - Y_SCALING));
-  const int y_rt = (RGB_Y_DOT * (color->rt - Y_SCALING));
-  const int y_lb = (RGB_Y_DOT * (color->lb - Y_SCALING));
-  const int y_rb = (RGB_Y_DOT * (color->rb - Y_SCALING));
-  const int c_b_s = color->c_b - C_SCALING;
-  const int c_r_s = color->c_r - C_SCALING;
-  const int r_term = (RGB_R_DOT * c_r_s);
-  const int g_term_0 =  RGB_G_R_DOT*(c_r_s);
-  const int g_term_1 =  RGB_G_B_DOT*(c_b_s);
-  const int b_term = (RGB_B_DOT * c_b_s);
+  const int32_t y_lt = (RGB_Y_DOT * (color->lt - Y_SCALING))  >> INT_SHIFT;
+  const int32_t y_rt = (RGB_Y_DOT * (color->rt - Y_SCALING))  >> INT_SHIFT;
+  const int32_t y_lb = (RGB_Y_DOT * (color->lb - Y_SCALING))  >> INT_SHIFT;
+  const int32_t y_rb = (RGB_Y_DOT * (color->rb - Y_SCALING))  >> INT_SHIFT;
+  const int32_t c_b_s = color->c_b - C_SCALING;
+  const int32_t c_r_s = color->c_r - C_SCALING;
+  const int32_t r_term = (RGB_R_DOT * c_r_s)  >> INT_SHIFT;
+  const int32_t g_term_0 = RGB_G_R_DOT*(c_r_s)  >> INT_SHIFT;
+  const int32_t g_term_1 = RGB_G_B_DOT*(c_b_s)  >> INT_SHIFT;
+  const int32_t b_term = (RGB_B_DOT * c_b_s)  >> INT_SHIFT;
 
   // Due to order of opperations we can't do this ahead of time
   /* int g_term = ((RGB_G_R_DOT * c_r_s) - (RGB_G_B_DOT * c_b_s)); */
 
   // Defering the bit shifting seems to preserve more accuracy
   pixels[0] = (RGBPixel){
-    CLAMP((y_lt + r_term) >> INT_SHIFT),
-    CLAMP((y_lt - g_term_0 - g_term_1) >> INT_SHIFT), // Can't shorten due to order of opperations
-    CLAMP((y_lt + b_term) >> INT_SHIFT),
+    CLAMP((y_lt + r_term)),
+    CLAMP((y_lt - g_term_0 - g_term_1)), // Can't shorten due to order of opperations
+    CLAMP((y_lt + b_term)),
   };
   pixels[1] = (RGBPixel){
-    CLAMP((y_rt + r_term) >> INT_SHIFT),
-    CLAMP((y_rt - g_term_0 - g_term_1) >> INT_SHIFT),
-    CLAMP((y_rt + b_term) >> INT_SHIFT)
+    CLAMP((y_rt + r_term)),
+    CLAMP((y_rt - g_term_0 - g_term_1)),
+    CLAMP((y_rt + b_term))
   };
   pixels[2] = (RGBPixel){
-    CLAMP((y_lb + r_term) >> INT_SHIFT),
-    CLAMP((y_lb - g_term_0 - g_term_1) >> INT_SHIFT),
-    CLAMP((y_lb + b_term) >> INT_SHIFT)
+    CLAMP((y_lb + r_term)),
+    CLAMP((y_lb - g_term_0 - g_term_1)),
+    CLAMP((y_lb + b_term))
   };
   pixels[3] = (RGBPixel){
-    CLAMP((y_rb + r_term) >> INT_SHIFT),
-    CLAMP((y_rb - g_term_0 - g_term_1) >> INT_SHIFT),
-    CLAMP((y_rb + b_term) >> INT_SHIFT)
+    CLAMP((y_rb + r_term)),
+    CLAMP((y_rb - g_term_0 - g_term_1)),
+    CLAMP((y_rb + b_term))
   };
 
   return pixels;
