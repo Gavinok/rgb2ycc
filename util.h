@@ -1,21 +1,21 @@
 #ifndef COLOR_UTILS
 #define COLOR_UTILS
-
+#include <stdint.h>
 typedef struct {
-     unsigned char red,green,blue;
+     uint8_t red,green,blue;
 } PPMPixel;
 
 typedef struct {
-     unsigned char y,c_b,c_r;
+     uint8_t y,c_b,c_r;
 } YCCPixel;
 
 typedef struct {
-     unsigned char lt,rt,lb,rb,c_b,c_r;
+     uint8_t lt,rt,lb,rb,c_b,c_r;
 } YCCPixel2;
 
 
 typedef struct {
-     int x, y;
+     int32_t x, y;
      PPMPixel *data;
 } PPMImage;
 

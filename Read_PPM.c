@@ -8,7 +8,8 @@ PPMImage *readPPM(const char *filename)
     char buff[16];
     PPMImage *img;
     FILE *fp;
-    int c, rgb_comp_color;
+    int32_t rgb_comp_color;
+    char c;
     // open PPM file for reading
     fp = fopen(filename, "rb");
     if (!fp) {
@@ -124,13 +125,13 @@ void writePPM(const char *filename, PPMImage *img)
 */
 void applyModifierPPM(PPMImage *img)
 {
-    int i,j;
+    int32_t i,j;
     if(img){
-      int width = img->x;
-      int height = img->y;
+      int32_t width = img->x;
+      int32_t height = img->y;
       RGBPixel result[4];
       for(j=0; j+2<height; j+=2){
-        int start = j * width;
+        int32_t start = j * width;
         for(i=start; i+2<(start+width); i+=2){
           YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
               &img->data[i],
@@ -157,8 +158,8 @@ void applyModifierPPM(PPMImage *img)
         }
       }
       if (j < height) {
-        int start = j * width;
-        for(int i=start; i+2<(start+width); i+=2){
+        int32_t start = j * width;
+        for(int32_t i=start; i+2<(start+width); i+=2){
           YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
               &img->data[i],
               &img->data[i+1],
