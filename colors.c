@@ -50,7 +50,14 @@ RGBPixel ycbcr_to_rgb(YCCPixel color){
   return p;
 }
 #define CLAMP(X) ((X > 0) ? X : 0)
-
+// #define CLAMP(X) (X > 25 ? 255 : ((X > 0) ? X : 0))
+// ARM efficient add
+inline int32_t clamp(int32_t x){
+  uint32_t y;
+  if ((y = x>>8))
+    x = ~y;
+  return x;
+}
 #define nCLAMP(X, min, max) (X > max ? max : ((X > min) ? X : min))
 
 YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
