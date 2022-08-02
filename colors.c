@@ -76,20 +76,20 @@ YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
          >> INT_SHIFT)
       + Y_SCALING;
 
-    c_b += CLAMP(
+    c_b += clamp(
                   (((YCC_G_R_DOT * pixels[i]->red)
                     - (YCC_G_G_DOT * pixels[i]->green)
                     + (YCC_G_B_DOT * pixels[i]->blue))
                    >> INT_SHIFT)
                   + C_SCALING);
 
-    c_r += CLAMP((((YCC_B_R_DOT * pixels[i]->red)
+    c_r += clamp((((YCC_B_R_DOT * pixels[i]->red)
                     - (YCC_B_G_DOT * pixels[i]->green)
                     - (YCC_B_B_DOT * pixels[i]->blue))
                    >> INT_SHIFT)
                   + C_SCALING);
 
-    y_pixels[i] = CLAMP(y);
+    y_pixels[i] = clamp(y);
   }
 
   YCCPixel2 p = {
@@ -121,24 +121,24 @@ RGBPixel* ycbcr_to_rgb2(const YCCPixel2* color, RGBPixel* pixels){
 
   // Defering the bit shifting seems to preserve more accuracy
   pixels[0] = (RGBPixel){
-    CLAMP((y_lt + r_term)),
-    CLAMP((y_lt - g_term_0 - g_term_1)), // Can't shorten due to order of opperations
-    CLAMP((y_lt + b_term)),
+    clamp((y_lt + r_term)),
+    clamp((y_lt - g_term_0 - g_term_1)), // Can't shorten due to order of opperations
+    clamp((y_lt + b_term)),
   };
   pixels[1] = (RGBPixel){
-    CLAMP((y_rt + r_term)),
-    CLAMP((y_rt - g_term_0 - g_term_1)),
-    CLAMP((y_rt + b_term))
+    clamp((y_rt + r_term)),
+    clamp((y_rt - g_term_0 - g_term_1)),
+    clamp((y_rt + b_term))
   };
   pixels[2] = (RGBPixel){
-    CLAMP((y_lb + r_term)),
-    CLAMP((y_lb - g_term_0 - g_term_1)),
-    CLAMP((y_lb + b_term))
+    clamp((y_lb + r_term)),
+    clamp((y_lb - g_term_0 - g_term_1)),
+    clamp((y_lb + b_term))
   };
   pixels[3] = (RGBPixel){
-    CLAMP((y_rb + r_term)),
-    CLAMP((y_rb - g_term_0 - g_term_1)),
-    CLAMP((y_rb + b_term))
+    clamp((y_rb + r_term)),
+    clamp((y_rb - g_term_0 - g_term_1)),
+    clamp((y_rb + b_term))
   };
 
   return pixels;
