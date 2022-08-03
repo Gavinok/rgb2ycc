@@ -23,9 +23,10 @@ all: rgb2ycc
 rgb2ycc: $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ)
 
+.PHONY: test
 test: $(TEST_OBJ)
 	$(CC) $(CFLAGS) $(TEST_OBJ) -o $@
 	./test
 
 clean:
-	$(RM) img_forest2.ppm $(OBJ) rgb2ycc
+	$(RM) img_forest2.ppm rgb2ycc test  *.o
