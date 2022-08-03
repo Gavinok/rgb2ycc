@@ -49,16 +49,14 @@ RGBPixel ycbcr_to_rgb(YCCPixel color){
   RGBPixel p = {r,g,b};
   return p;
 }
-#define CLAMP(X) ((X > 0) ? X : 0)
-// #define CLAMP(X) (X > 25 ? 255 : ((X > 0) ? X : 0))
-// ARM efficient add
+// ARM efficient clamp to ensure values always fall between 255 and 0
 inline int32_t clamp(int32_t x){
-  uint32_t y;
-  if ((y = x>>8))
-    x = ~y;
+  // unsigned is used to ensure numbers bellow 0 and above 255 will set y to 1
+  uint32_t y = x>>8;
+  if (y)
+    x = ~y >> 24;
   return x;
 }
-#define nCLAMP(X, min, max) (X > max ? max : ((X > min) ? X : min))
 
 YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
   // TODO See if this well ever even need to be clamped
@@ -68,7 +66,7 @@ YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
   // Pass 2: Use averaging
   uint8_t y_pixels[4];
   int32_t y, c_b = 0, c_r = 0;
-  for (uint8_t i = 0; i < 4; i++) {
+  for (uint8_t i = 0; 4 > i ; i++) {
     // NOTE: y could never actaully be negative
     y = ((YCC_R_R_DOT * pixels[i]->red
           + YCC_R_G_DOT * pixels[i]->green
