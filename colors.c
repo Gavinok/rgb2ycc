@@ -52,8 +52,8 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
   int y, c_b, c_r;
   for (int i = 0; i < 4; i++) {
     y = ((257 * pixels[i].red / 1000) + (504 * pixels[i].green / 1000) + (98 * pixels[i].blue / 1000)) + Y_SCALING;
-    c_b = ((-148 * pixels[1].red / 1000) - (291 * pixels[1].green / 1000) + (439 * pixels[1].blue / 1000)) + C_SCALING;
-    c_r = ((439 * pixels[1].red / 1000) - (368 * pixels[1].green / 1000) - (71 * pixels[1].blue / 1000)) + C_SCALING;
+    c_b = ((-148 * pixels[i].red / 1000) - (291 * pixels[i].green / 1000) + (439 * pixels[i].blue / 1000)) + C_SCALING;
+    c_r = ((439 * pixels[i].red / 1000) - (368 * pixels[i].green / 1000) - (71 * pixels[i].blue / 1000)) + C_SCALING;
     y = y > 0 ? y : 0;
     c_b = c_b > 0 ? c_b : 0;
     c_r = c_r > 0 ? c_r : 0;
