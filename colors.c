@@ -20,7 +20,7 @@ int add( register int a, register int b){
 }
 #endif
 // ARM efficient clamp to ensure values always fall between 255 and 0
-inline int32_t clamp(int32_t x){
+inline uint8_t clamp(int32_t x){
   // unsigned is used to ensure numbers bellow 0 and above 255 will set y to 1
   uint32_t y = x>>8;
   if (y)
