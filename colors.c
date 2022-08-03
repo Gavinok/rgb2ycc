@@ -57,14 +57,14 @@ YCCPixel2 rgb_to_ycbcr2(RGBPixel* pixels){
           + YCC_R_B_DOT * pixels[i].blue)
          >> INT_SHIFT)
       + Y_SCALING;
-    c_b = (((YCC_G_R_DOT * pixels[1].red)
-            - (YCC_G_G_DOT * pixels[1].green)
-            + (YCC_G_B_DOT * pixels[1].blue))
+    c_b = (((YCC_G_R_DOT * pixels[i].red)
+            - (YCC_G_G_DOT * pixels[i].green)
+            + (YCC_G_B_DOT * pixels[i].blue))
            >> INT_SHIFT)
       + C_SCALING;
-    c_r = (((YCC_B_R_DOT * pixels[1].red)
-            - (YCC_B_G_DOT * pixels[1].green)
-            - (YCC_B_B_DOT * pixels[1].blue))
+    c_r = (((YCC_B_R_DOT * pixels[i].red)
+            - (YCC_B_G_DOT * pixels[i].green)
+            - (YCC_B_B_DOT * pixels[i].blue))
            >> INT_SHIFT)
       + C_SCALING;
 
