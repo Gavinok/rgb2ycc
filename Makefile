@@ -21,7 +21,7 @@ all: rgb2ycc
 
 # Generate the final executable
 rgb2ycc: $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $@
 
 .PHONY: test
 test: $(TEST_OBJ)
