@@ -24,7 +24,7 @@ PPMImage *readPPM(const char *filename)
     }
 
     // check the image format
-    if (buff[0] != 'P' || buff[1] != '6') {
+    if ('P' != buff[0] || '6' != buff[1]) {
         fprintf(stderr, "Invalid image format (must be 'P6')\n");
         exit(1);
     }
@@ -38,7 +38,7 @@ PPMImage *readPPM(const char *filename)
 
     // check for comments
     c = getc(fp);
-    while (c == '#') {
+    while ('#' == c) {
         while (getc(fp) != '\n')
             ;
         c = getc(fp);
@@ -46,24 +46,24 @@ PPMImage *readPPM(const char *filename)
 
     ungetc(c, fp);
     // read image size information
-    if (fscanf(fp, "%d %d", &img->x, &img->y) != 2) {
+    if (2 != fscanf(fp, "%d %d", &img->x, &img->y)) {
         fprintf(stderr, "Invalid image size (error loading '%s')\n", filename);
         exit(1);
     }
 
     // read rgb component
-    if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
+    if (1 != fscanf(fp, "%d", &rgb_comp_color)) {
         fprintf(stderr, "Invalid rgb component (error loading '%s')\n", filename);
         exit(1);
     }
 
     // check rgb component depth
-    if (rgb_comp_color != RGB_COMPONENT_COLOR) {
+    if (RGB_COMPONENT_COLOR != rgb_comp_color) {
         fprintf(stderr, "'%s' does not have 8-bits components\n", filename);
         exit(1);
     }
 
-    while (fgetc(fp) != '\n')
+    while ('\n' != fgetc(fp))
         ;
     // memory allocation for pixel data
     img->data = (PPMPixel *)malloc(img->x * img->y * sizeof(PPMPixel));
@@ -157,7 +157,7 @@ void applyModifierPPM(PPMImage *img)
           img->data[i+width] = result[2];
         }
       }
-      if (j < height) {
+      if (height > j) {
         int32_t start = j * width;
         for(int32_t i=start; i+2<(start+width); i+=2){
           YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
