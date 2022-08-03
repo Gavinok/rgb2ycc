@@ -1,8 +1,9 @@
 #include "colors.h"
 // https://bright.uvic.ca/d2l/le/content/204143/viewContent/1720844/View
-// since we are using gcc asm inlining is required
-// TODO add an ifdef to handle the possible wrap around
+
+// While nolonger used this is kept for reference
 #ifdef ARM
+// Since we are using gcc asm inlining is required
 int add( register int a, register int b){
   register int sum ;
   __asm__ __volatile__ (
@@ -59,11 +60,6 @@ inline int32_t clamp(int32_t x){
 }
 
 YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
-  // TODO See if this well ever even need to be clamped
-  // Convert to accept 4 RGB Pixels
-  // Pass 1: pre-calculate the first C values and just use those in the other 4
-
-  // Pass 2: Use averaging
   uint8_t y_pixels[4];
   int32_t y, c_b = 0, c_r = 0;
   for (uint8_t i = 0; 4 > i ; i++) {
