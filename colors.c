@@ -1,8 +1,9 @@
 #include "colors.h"
 // https://bright.uvic.ca/d2l/le/content/204143/viewContent/1720844/View
-// since we are using gcc asm inlining is required
-// TODO add an ifdef to handle the possible wrap around
+
+// While nolonger used this is kept for reference
 #ifdef ARM
+// Since we are using gcc asm inlining is required
 int add( register int a, register int b){
   register int sum ;
   __asm__ __volatile__ (
@@ -18,39 +19,8 @@ int add( register int a, register int b){
   return sum ;
 }
 #endif
-YCCPixel rgb_to_ycbcr(RGBPixel color){
-  // TODO See if this well ever even need to be clamped
-  // TODO convert to integer arithmetic (should be relitively simple)
-  int r = color.red;
-  int g = color.green;
-  int b = color.blue;
-  YCCPixel p = {
-    ((257 * r / 1000) + (504 * g / 1000) + (98 * b / 1000)) + Y_SCALING,
-    ((-148 * r / 1000) - (291 * g / 1000) + (439 * b / 1000)) + C_SCALING,
-    ((+439 * r / 1000) - (368 * g / 1000) - (71 * b / 1000)) + C_SCALING
-  };
-  return p;
-}
-
-RGBPixel ycbcr_to_rgb(YCCPixel color){
-  int y_s = color.y - Y_SCALING;
-  int c_b_s = color.c_b - C_SCALING;
-  int c_r_s = color.c_r - C_SCALING;
-  int r = ((1164 * y_s / 1000) + (1596 * c_r_s / 1000));
-  int g = ((1164 * y_s / 1000) - (813 * c_r_s / 1000) - (391 * c_b_s / 1000));
-  int b = ((1164 * y_s / 1000) + (2018 * c_b_s / 1000));
-  // TODO Determine if there is a way to clamp here without as much branching
-  // Answer: Doesn't appear to be a good way in C, QADD in asm is best solution. 
-  // Could try adding this as a normal conditional rather than an inline since I 
-  // think that avoiding the re-assignment of r = r etc might be slowing it down by a couple cycles.
-  r = r > 0 ? r : 0;
-  g = g > 0 ? g : 0;
-  b = b > 0 ? b : 0;
-  RGBPixel p = {r,g,b};
-  return p;
-}
 // ARM efficient clamp to ensure values always fall between 255 and 0
-inline int32_t clamp(int32_t x){
+inline uint8_t clamp(int32_t x){
   // unsigned is used to ensure numbers bellow 0 and above 255 will set y to 1
   uint32_t y = x>>8;
   if (y)
@@ -59,11 +29,6 @@ inline int32_t clamp(int32_t x){
 }
 
 YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels){
-  // TODO See if this well ever even need to be clamped
-  // Convert to accept 4 RGB Pixels
-  // Pass 1: pre-calculate the first C values and just use those in the other 4
-
-  // Pass 2: Use averaging
   uint8_t y_pixels[4];
   int32_t y, c_b = 0, c_r = 0;
   for (uint8_t i = 0; 4 > i ; i++) {

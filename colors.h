@@ -31,5 +31,5 @@ YCCPixel rgb_to_ycbcr(RGBPixel color);
 RGBPixel ycbcr_to_rgb(YCCPixel color);
 YCCPixel2 rgb_to_ycbcr2(const RGBPixel** pixels);
 RGBPixel* ycbcr_to_rgb2(const YCCPixel2* color, RGBPixel* pixels);
-int32_t clamp(int32_t x);
+uint8_t clamp(int32_t x);
 #endif

@@ -29,7 +29,10 @@ PPMImage *readPPM(const char *filename)
         exit(1);
     }
 
-    // alloc memory form image
+    // Alloc memory form image
+    // This cast is mostly just to clarify that this is a
+    // pointer. While not manditory with most C compilers this is
+    // required if compiled with a C++ compiler like g++
     img = (PPMImage *)malloc(sizeof(PPMImage));
     if (!img) {
         fprintf(stderr, "Unable to allocate memory\n");
@@ -65,7 +68,12 @@ PPMImage *readPPM(const char *filename)
 
     while ('\n' != fgetc(fp))
         ;
-    // memory allocation for pixel data
+
+    // Memory allocation for pixel data.
+
+    // This cast is mostly just to clarify that this is a
+    // pointer. While not manditory with most C compilers this is
+    // required if compiled with a C++ compiler like g++
     img->data = (PPMPixel *)malloc(img->x * img->y * sizeof(PPMPixel));
 
     if (!img) {
@@ -73,9 +81,10 @@ PPMImage *readPPM(const char *filename)
         exit(1);
     }
 
-    // read pixel data from file
-    //  XXX Should we even be doing this cast? This assumes y will always be
-    //  positive.
+    // Read pixel data from file.
+
+    // This casting is necessary to properly
+    // function on newer versions of clang
     if (fread(img->data, 3 * img->x, img->y, fp) != (size_t)img->y) {
         fprintf(stderr, "Error loading image '%s'\n", filename);
         exit(1);
@@ -133,6 +142,8 @@ void applyModifierPPM(PPMImage *img)
       for(j=0; j+2<height; j+=2){
         int32_t start = j * width;
         for(i=start; i+2<(start+width); i+=2){
+          // Cast to keep more concise at 0 cost as seen in the
+          // resulting assembally
           YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
               &img->data[i],
               &img->data[i+1],
@@ -160,6 +171,8 @@ void applyModifierPPM(PPMImage *img)
       if (height > j) {
         int32_t start = j * width;
         for(int32_t i=start; i+2<(start+width); i+=2){
+          // Cast to keep more concise at 0 cost as seen in the
+          // resulting assembally
           YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
               &img->data[i],
               &img->data[i+1],
@@ -171,6 +184,8 @@ void applyModifierPPM(PPMImage *img)
           img->data[i+1] = result[1];
         }
         if (i+1<(start+width)) {
+          // Cast to keep more concise at 0 cost as seen in the
+          // resulting assembally
           YCCPixel2 yccPixels = rgb_to_ycbcr2((const RGBPixel*[4]){
               &img->data[i],
               &img->data[i],
